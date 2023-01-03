@@ -1,0 +1,105 @@
+#include <stdio.h>
+
+void displayMenu(char itemPrefixes[], int itemPrices[], int n);
+int withinBudget(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[],int n);
+int getItemPrice(char itemPurchased, char itemPrefixes[], int itemPrices[],int n);
+int purchaseItem(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[],int n);
+
+int main() {
+char itemPrefixes[5];
+int itemPrices[5];
+int budget;
+char itemPurchased;
+int n;
+char itemPrefix;
+int price;
+char continueShopping;
+
+printf("Shopkeeper panel\n");
+printf("How many fruit items do you want to add to the shop?: ");
+scanf("%d", &n);
+
+for (int i = 0; i < n; i++)
+{
+    printf("Enter item prefix: ");
+    scanf(" %c", &itemPrefixes[i]);
+    printf("Enter item price: ");
+    scanf("%d", &itemPrices[i]);
+}
+
+// Get user input for initial budget
+printf("Enter budget: ");
+scanf("%d", &budget);
+
+while (budget > 0)
+{
+    displayMenu(itemPrefixes, itemPrices, n);
+
+    printf("Enter item prefix to purchase: ");
+    scanf(" %c", &itemPurchased);
+
+    if (withinBudget(budget, itemPurchased, itemPrefixes, itemPrices, n))
+    {
+        budget = purchaseItem(budget, itemPurchased, itemPrefixes, itemPrices, n);
+        printf("Remaining budget: $%d\n", budget);
+    }
+    else
+    {
+        printf("Error: Not enough budget to purchase item.\n");
+    }
+
+    printf("Continue shopping (Y/N)? ");
+    scanf(" %c", &continueShopping);
+    if (continueShopping == 'N')
+    {
+        break;
+    }
+}
+
+printf("Thank you for shopping with us!\n");
+return 0;
+}
+
+void displayMenu(char itemPrefixes[], int itemPrices[], int n)
+{
+printf("Menu:\n");
+for (int i = 0; i < n; i++)
+{
+printf("%c: $%d\n", itemPrefixes[i], itemPrices[i]);
+}
+}
+
+// Returns 1 if the item can be purchased within the budget, 0 otherwise
+int withinBudget(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[], int n)
+{
+int itemPrice = getItemPrice(itemPurchased, itemPrefixes, itemPrices, n);
+if (itemPrice == -1)
+{
+printf("Error: Invalid item\n");
+return 0;
+}
+if (budget < itemPrice)
+{
+return 0;
+}
+return 1;
+}
+
+// Returns the price of the item or -1 if the item is not found
+int getItemPrice(char itemPurchased, char itemPrefixes[], int itemPrices[], int n)
+{
+for (int i = 0; i < n; i++)
+{
+if (itemPrefixes[i] == itemPurchased)
+{
+return itemPrices[i];
+}
+}
+return -1;
+}
+int purchaseItem(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[], int n)
+{
+int itemPrice = getItemPrice(itemPurchased, itemPrefixes, itemPrices, n);
+budget -= itemPrice;
+return budget;
+}
