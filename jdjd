@@ -1,0 +1,217 @@
+#include <stdio.h>
+
+int isItemExist(char itemPrefixes[], int n, char itemPrefix);
+void displayMenu(char itemPrefixes[], int itemPrices[], int n);
+int withinBudget(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[]);
+int purchaseItem(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[], int n);
+int getItemPrice(char itemPrefixes[], int itemPrices[], int n, char itemPrefix);
+
+int main()
+{// These char the data types, The itemPrefixes array, the item purchased by the customer, continueshopping for the y or n and itemPrefix for the item name
+    char itemPrefixes[5], itemPurchased, continueShopping, itemPrefix;
+ //These are the int data types, the ItemPrices array, the budget, the chosenfruit for the fruit entered by the shopkeeper and 'n' for the amount of items the shopkeeper has entered(up to 5)
+    int itemPrices[5], budget = 0, chosenfruit = 0, n;
+    //This data type is just for the pound symbol
+    char pound = 156;
+
+    printf("*** SHOPKEEPER PANEL***");
+    //Here the program how many fruit items the shopkeeper wants to put in his shop.
+    printf("\nHow many fruit items do you want to add to the shop?(Up to 5 items today): ");
+    scanf_s("%d", &n);
+
+    //here while the chosen fruit number (fruit entered by the shopkeeper) is more than 1 the program starts.
+    while (chosenfruit < n)
+    {
+        //Here the shopkeeper enters the item prefix for the items he wants in his shop
+        printf("\n(%d) Enter an item prefix: ", chosenfruit + 1);
+        scanf_s(" %c", &itemPrefix);
+        //Here, this if else statement is for if the shopkeeper has entered the same itemPrefix twice. If an item prefix has been entered the message error pops up.
+        if (isItemExist(itemPrefixes, n, itemPrefix) == 1)
+        {
+            printf("Error: Item already exists\n");
+
+        }
+        //This promp is for if there are no identical itemPrefixes.The program asks the shopkeeper to enter the price for the items he has entered.
+        else
+        {
+            itemPrefixes[chosenfruit] = itemPrefix;
+            printf("Enter price for item (%c):%c", itemPrefix,pound);
+            scanf_s("%d", &itemPrices[chosenfruit]);
+            chosenfruit++;
+
+        }
+    }
+    printf("***********************\n\n");
+
+    //Here the program welcomes the customer to the shop
+    printf("*********************************************\n");
+    printf("Hello dear customer and Welcome to the shop!\n");
+    printf("Here is today's item menu with today's prices!\n");
+    printf("*********************************************\n\n");
+    
+    //Here the function displayMenu gets called to the main function and the items that the shopkeeper has entered show up for the customer.
+    displayMenu(itemPrefixes, itemPrices, n);
+
+
+    //Here starts the do while loop for the budget. While the budget is more than 0 then the program keeps looping.
+    do
+    {
+        printf("\n**CUSTOMER PANEL***");
+        //Here the program asks the customer to enter their budget
+        printf("\nEnter your budget:%c",pound);
+        //Here, this if statement promps if the budget is not equal to 1.
+        if (scanf_s("%d", &budget) != 1)
+        {
+            // This scanf%*[^\n] scans everything until a \n, but doesn't scan in the \n. The asterisk(*) tells it to discard whatever was scanned.
+            scanf_s("%*[^\n]");
+            printf("Invalid input. Enter a valid budget\n");
+        }
+        //This else statement promps if everything is correct and the program continues normally.
+        else
+        {
+            break;
+        }
+
+    } while (1);
+    printf("**********************\n");
+
+
+    //Here, if the budget is more than 0 the program asks the customer to enter what they want to purchase from the shop by asking the item prefix.
+    while (budget > 0)
+    {
+        printf("\nPlease enter Item Prefix from the menu to purchase: ");
+        scanf_s(" %c", &itemPurchased);
+        //Here if the withinbudget(the budget) is more than 1 this promps
+        if (withinBudget(budget, itemPurchased, itemPrefixes, itemPrices) == 1)
+        {
+            //The budget goes to the purchaseitem function.
+            budget = purchaseItem(budget, itemPurchased, itemPrefixes, itemPrices, n);
+            //The program shows a purchase successful message and prints out the receipt for the customer.
+            printf("PURCHASE SUCCESSFUL!\n\n");
+            printf("Here is your receipt!\n");
+            //The function getItemPrice gets all the data from the itemPrice functiom.
+            int itemPrice = getItemPrice(itemPrefixes, itemPrices, n, itemPurchased);
+            //The receipt gets printed here.
+            printf("Item purchased:%c\n", itemPurchased);
+            printf("Item price:%c%d\n",pound, itemPrice);
+            printf("Remaining budget:%c%d\n",pound, budget);
+        }
+        //If the budget is less than the item the customer wants to purchase, this message promps.
+        else
+        {
+            printf("INSUFFICIENT BUDGET OR MISSING ITEM\n");
+        }
+        //If the budget is more than 0 after the customer receives the receipt, the program asks the customer if they want to continue shopping.
+        if (budget > 0 && budget >= getItemPrice(itemPrefixes, itemPrices, n, itemPurchased))
+        {
+            //Here the program asks if the customer wants to continue shopping.
+            printf("Do you want to continue shopping(y/n)?: ");
+            scanf_s(" %c", &continueShopping);
+            //If the answer to the continue shopping question is yes, the program shows the message Please enter Item Prefix from the menu to purchase: for the customer to enter the item they want to purchase
+            if (continueShopping != 'y' && continueShopping != 'Y')
+            {
+                break;
+            }
+        }
+    }
+    //The program thanks the customer for shopping regardless of if the budget is less than the item they want to purchase.
+    printf("Thank you for shopping with us!\n");
+    return 0;
+}
+
+//A function that avoids the duplicate addition of items.
+int isItemExist(char itemPrefixes[], int n, char itemPrefix)
+{
+    if (itemPrefixes[0] == itemPrefix || itemPrefixes[1] == itemPrefix || itemPrefixes[2] == itemPrefix || itemPrefixes[3] == itemPrefix || itemPrefixes[4] == itemPrefix)
+    {
+        return 1;
+    }
+    return 0;
+}
+//A function for the display menu.
+void displayMenu(char itemPrefixes[], int itemPrices[], int n)
+{
+    printf("*** ITEM MENU ***");
+    printf("\nItem: \t Price: ");
+    for (int i = 0; i < n; i++)
+    {
+        printf("\n%c:\t %d", itemPrefixes[i], itemPrices[i]);
+    }
+}
+// A function that determines whether customer have sufficient budget left for buying a particular item.
+int withinBudget(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[])
+{
+    if (itemPurchased == itemPrefixes[0] && budget >= itemPrices[0])
+    {
+        return 1;
+    }
+    else if (itemPurchased == itemPrefixes[1] && budget >= itemPrices[1])
+    {
+        return 1;
+    }
+    else if (itemPurchased == itemPrefixes[2] && budget >= itemPrices[2])
+    {
+        return 1;
+    }
+    else if (itemPurchased == itemPrefixes[3] && budget >= itemPrices[3])
+    {
+        return 1;
+    }
+    else if (itemPurchased == itemPrefixes[4] && budget >= itemPrices[4])
+    {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+//A  function that is used to make a purchase in the shopping program you have shown
+int purchaseItem(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[], int n)
+{
+    if (itemPurchased == itemPrefixes[0])
+    {
+        budget -= itemPrices[0];
+    }
+    else if (itemPurchased == itemPrefixes[1])
+    {
+        budget -= itemPrices[1];
+    }
+    else if (itemPurchased == itemPrefixes[2])
+    {
+        budget -= itemPrices[2];
+    }
+    else if (itemPurchased == itemPrefixes[3])
+    {
+        budget -= itemPrices[3];
+    }
+    else if (itemPurchased == itemPrefixes[4])
+    {
+        budget -= itemPrices[4];
+    }
+    return budget;
+}
+//A function that is used to get the price of a specific item in the shopping program you have shown.
+int getItemPrice(char itemPrefixes[], int itemPrices[], int n, char itemPrefix)
+{
+    if (itemPrefix == itemPrefixes[0])
+    {
+        return itemPrices[0];
+    }
+    else if (itemPrefix == itemPrefixes[1])
+    {
+        return itemPrices[1];
+    }
+    else if (itemPrefix == itemPrefixes[2])
+    {
+        return itemPrices[2];
+    }
+    else if (itemPrefix == itemPrefixes[3])
+    {
+        return itemPrices[3];
+    }
+    else if (itemPrefix == itemPrefixes[4])
+    {
+        return itemPrices[4];
+    }
+    return -1;
+}
