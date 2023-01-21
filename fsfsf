@@ -1,0 +1,148 @@
+#include <stdio.h>
+
+int isItemExist(char itemPrefixes[], int n, char itemPrefix);
+void displayMenu(char itemPrefixes[], int itemPrices[], int n);
+int withinBudget(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[]);
+int purchaseItem(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[], int n);
+int getItemPrice(char itemPrefixes[], int itemPrices[], int n, char itemPrefix);
+
+int main()
+{
+    char itemPrefixes[5], itemPurchased, continueShopping, itemPrefix;
+    int itemPrices[5], budget = 0, chosenfruit = 0, n;
+    char pound = 156;
+    do {
+        printf("\nHow many fruit items do you want to add to the shop?: ");
+        if (scanf_s("%d", &n) != 1)
+        {
+            scanf_s("%*[^\n]");
+            printf("Invalid input. Please enter a valid number.\n");
+        }
+        else 
+        {
+            break;
+        }
+    } while (1);
+
+    while (chosenfruit < n)
+    {
+        printf("\n(%d) Enter an item prefix: ", chosenfruit + 1);
+        scanf_s(" %c", &itemPrefix, 1);
+        if (isItemExist(itemPrefixes, n, itemPrefix) == 1)
+        {
+            printf("Error: Item already exists\n");
+
+        }
+        else
+        {
+            itemPrefixes[chosenfruit] = itemPrefix;
+            printf("Enter price for item (%c):%c", itemPrefix, pound);
+            scanf_s("%d",&itemPrices[chosenfruit]);
+            chosenfruit++;
+        }
+    }
+    printf("***********************\n\n");
+
+    printf("*********************************************\n");
+    printf("Hello dear customer and Welcome to the shop!\n");
+    printf("Here is today's item menu with today's prices!\n");
+    printf("*********************************************\n\n");
+
+    displayMenu(itemPrefixes, itemPrices, n);
+
+    do
+    {
+        printf("\n*** CUSTOMER PANEL ***");
+        printf("\nEnter your budget:%c", pound);
+        if (scanf_s("%d", &budget) != 1)
+        {
+            scanf_s("%*[^\n]");
+            printf("Invalid input. Please enter a valid number.\n");
+        }
+        else
+        {
+            break;
+        }
+    } while (1);
+
+    do
+    {
+        printf("\nEnter an item prefix to purchase: ");
+        scanf_s(" %c", &itemPurchased, 1);
+        if (isItemExist(itemPrefixes, n, itemPurchased) == 1)
+        {
+            if (withinBudget(budget, itemPurchased, itemPrefixes,itemPrices) == 1)
+{
+budget = purchaseItem(budget, itemPurchased, itemPrefixes, itemPrices, n);
+}
+}
+else
+{
+printf("Error: Item does not exist\n");
+}
+printf("Do you want to continue shopping (y/n)? ");
+scanf_s(" %c", &continueShopping, 1);
+} while (continueShopping != 'n');
+
+printf("\n*** Thank you for shopping with us! ***\n");
+return 0;
+}
+
+int isItemExist(char itemPrefixes[], int n, char itemPrefix)
+{
+int i;
+for (i = 0; i < n; i++)
+{
+if (itemPrefixes[i] == itemPrefix)
+{
+return 1;
+}
+}
+return 0;
+}
+
+void displayMenu(char itemPrefixes[], int itemPrices[], int n)
+{
+int i;
+for (i = 0; i < n; i++)
+{
+printf("Item (%c) - Price: %c%d\n", itemPrefixes[i], 156, itemPrices[i]);
+}
+}
+
+int withinBudget(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[])
+{
+int itemPrice = getItemPrice(itemPrefixes, itemPrices, 5, itemPurchased);
+if (itemPrice <= budget)
+{
+return 1;
+}
+else
+{
+printf("Error: Not enough budget\n");
+return 0;
+}
+}
+
+int purchaseItem(int budget, char itemPurchased, char itemPrefixes[], int itemPrices[], int n)
+{
+int itemPrice = getItemPrice(itemPrefixes, itemPrices, n, itemPurchased);
+budget -= itemPrice;
+printf("Item purchased:%c\n", itemPurchased);
+printf("Item price:%c%d\n", 156, itemPrice);
+printf("Remaining budget:%c%d\n", 156, budget);
+return budget;
+}
+
+int getItemPrice(char itemPrefixes[], int itemPrices[], int n, char itemPrefix)
+{
+int i;
+for (i = 0; i < n; i++)
+{
+if (itemPrefixes[i] == itemPrefix)
+{
+return itemPrices[i];
+}
+}
+return -1;
+}
